@@ -411,7 +411,7 @@ const GAMES=[
 let caught={}, formsCaught={}, ownedGames={}, dark=true, statFil='all', holdT=null;
 
 // ═══════════════════════════════════════════
-//  STORAGE  (localStorage, no external deps)
+//  STORAGE  (localStorage + Firestore cloud)
 // ═══════════════════════════════════════════
 function save(){
   try{
@@ -420,6 +420,7 @@ function save(){
     localStorage.setItem('pht_games',  JSON.stringify(ownedGames));
     localStorage.setItem('pht_dark',   dark?'1':'0');
   }catch(e){}
+  cloudSave();
 }
 function load(){
   try{
@@ -430,11 +431,15 @@ function load(){
     dark = d===null ? true : d==='1';
   }catch(e){}
 }
+// stub — replaced by Firebase module once loaded
+function cloudSave(){}
 
 // ═══════════════════════════════════════════
 //  HELPERS
 // ═══════════════════════════════════════════
-const spr = id => `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${id}.png`;
+const SPRITE_BASE = 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/';
+const FALLBACK_SVG = `data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 120 120'%3E%3Ccircle cx='60' cy='60' r='54' fill='%23374151' stroke='%234b5563' stroke-width='4'/%3E%3Cpath d='M6 60h108M34 60a26 26 0 0 1 52 0' fill='none' stroke='%236b7280' stroke-width='6'/%3E%3Ccircle cx='60' cy='60' r='14' fill='%234b5563' stroke='%236b7280' stroke-width='4'/%3E%3Ccircle cx='60' cy='60' r='6' fill='%239ca3af'/%3E%3C/svg%3E`;
+const spr = id => `${SPRITE_BASE}${id}.png`;
 const getGen = n => GENS.find(g=>n>=g.s&&n<=g.e)||GENS[0];
 const pad = n => String(n).padStart(4,'0');
 
@@ -522,7 +527,19 @@ function mkSlot(id, nm, sprId, isF){
 
   const img=document.createElement('img');
   img.src=spr(sprId); img.loading='lazy'; img.alt=nm;
-  img.onerror=()=>{img.src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 96 96'%3E%3Ctext y='60' font-size='48' text-anchor='middle' x='48'%3E%3F%3C/text%3E%3C/svg%3E";};
+  img.onerror=()=>{
+    // fallback 1: pokemondb
+    if(!img.dataset.fb1){
+      img.dataset.fb1='1';
+      // only works for numbered ids
+      const numId=parseInt(sprId);
+      if(!isNaN(numId) && numId<=1025){
+        img.src=`https://img.pokemondb.net/sprites/home/normal/${(nm||'unknown').toLowerCase().replace(/[^a-z0-9]/g,'-').replace(/-+/g,'-').replace(/^-|-$/g,'')}.png`;
+        return;
+      }
+    }
+    img.src=FALLBACK_SVG;
+  };
 
   const snum=document.createElement('div'); snum.className='snum';
   snum.textContent=isF?'':('#'+pad(id));
@@ -732,6 +749,144 @@ document.getElementById('dtog').textContent=dark?'☀️ Light':'🌙 Dark';
 buildDex();
 buildForms();
 updateBars();
+</script>
+
+<!-- ═══════════════════════════════════════════
+     FIREBASE — paste your config below
+     ═══════════════════════════════════════════ -->
+<script type="module">
+import { initializeApp }
+  from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
+import { getFirestore, doc, getDoc, setDoc }
+  from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
+import { getAuth, signInAnonymously, onAuthStateChanged }
+  from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js';
+
+// ─── PASTE YOUR firebaseConfig HERE ───────
+const firebaseConfig = {
+  apiKey:            "YOUR_API_KEY",
+  authDomain:        "YOUR_PROJECT.firebaseapp.com",
+  projectId:         "YOUR_PROJECT_ID",
+  storageBucket:     "YOUR_PROJECT.appspot.com",
+  messagingSenderId: "YOUR_SENDER_ID",
+  appId:             "YOUR_APP_ID"
+};
+// ──────────────────────────────────────────
+
+// Guard: skip if config hasn't been filled in
+if (firebaseConfig.apiKey === 'YOUR_API_KEY') {
+  console.info('[HOME Dex] Firebase not configured — using localStorage only.');
+} else {
+  const app  = initializeApp(firebaseConfig);
+  const db   = getFirestore(app);
+  const auth = getAuth(app);
+
+  // show a small sync indicator in the header
+  const syncDot = document.createElement('span');
+  syncDot.id = 'sync-dot';
+  syncDot.title = 'Cloud sync status';
+  syncDot.style.cssText =
+    'width:8px;height:8px;border-radius:50%;background:#f39c12;display:inline-block;margin-left:4px;transition:background .4s;flex-shrink:0';
+  document.querySelector('.hdr-r').prepend(syncDot);
+
+  const setSyncStatus = s => {
+    // s: 'syncing' | 'ok' | 'error'
+    syncDot.style.background = s==='ok' ? '#4ade80' : s==='error' ? '#e94560' : '#f39c12';
+    syncDot.title = s==='ok' ? 'Synced to cloud' : s==='error' ? 'Sync error' : 'Syncing…';
+  };
+
+  let uid = null;
+  let saveTimer = null;
+
+  // Debounced cloud save — batches rapid catches into one write
+  window.cloudSave = () => {
+    clearTimeout(saveTimer);
+    saveTimer = setTimeout(async () => {
+      if (!uid) return;
+      setSyncStatus('syncing');
+      try {
+        await setDoc(
+          doc(db, 'users', uid, 'data', 'progress'),
+          {
+            caught:      JSON.stringify(caught),
+            formsCaught: JSON.stringify(formsCaught),
+            ownedGames:  JSON.stringify(ownedGames),
+            dark:        dark ? '1' : '0',
+            updatedAt:   Date.now(),
+          }
+        );
+        setSyncStatus('ok');
+      } catch(e) {
+        console.error('[HOME Dex] Firestore save error:', e);
+        setSyncStatus('error');
+      }
+    }, 800); // wait 800 ms after last catch before writing
+  };
+
+  // Apply loaded cloud data to the live UI
+  function applyCloudData(d) {
+    try { caught      = JSON.parse(d.caught      || '{}'); } catch(e){}
+    try { formsCaught = JSON.parse(d.formsCaught || '{}'); } catch(e){}
+    try { ownedGames  = JSON.parse(d.ownedGames  || '{}'); } catch(e){}
+    dark = d.dark !== '0';
+
+    document.body.classList.toggle('light', !dark);
+    document.getElementById('dtog').textContent = dark ? '☀️ Light' : '🌙 Dark';
+
+    // sync slot classes
+    document.querySelectorAll('.slot[data-id]').forEach(el => {
+      el.classList.toggle('got', !!caught[+el.dataset.id]);
+    });
+    document.querySelectorAll('.slot[data-fid]').forEach(el => {
+      el.classList.toggle('got', !!formsCaught[el.dataset.fid]);
+    });
+    updateBars();
+
+    // mirror to localStorage
+    try {
+      localStorage.setItem('pht_caught', JSON.stringify(caught));
+      localStorage.setItem('pht_forms',  JSON.stringify(formsCaught));
+      localStorage.setItem('pht_games',  JSON.stringify(ownedGames));
+      localStorage.setItem('pht_dark',   dark ? '1' : '0');
+    } catch(e){}
+  }
+
+  signInAnonymously(auth).catch(e => {
+    console.error('[HOME Dex] Auth error:', e);
+    setSyncStatus('error');
+  });
+
+  onAuthStateChanged(auth, async user => {
+    if (!user) return;
+    uid = user.uid;
+    setSyncStatus('syncing');
+
+    try {
+      const snap = await getDoc(doc(db, 'users', uid, 'data', 'progress'));
+      if (snap.exists()) {
+        // Cloud has data — check which is newer
+        const cloud = snap.data();
+        const cloudTs = cloud.updatedAt || 0;
+        const localTs = +localStorage.getItem('pht_ts') || 0;
+        if (cloudTs >= localTs) {
+          applyCloudData(cloud);
+        }
+        // else keep the localStorage data that was already loaded
+      }
+      setSyncStatus('ok');
+    } catch(e) {
+      console.error('[HOME Dex] Firestore load error:', e);
+      setSyncStatus('error');
+    }
+  });
+
+  // stamp localStorage writes so we can compare with cloud
+  const _origSave = window.save;
+  window.save = () => {
+    try { localStorage.setItem('pht_ts', Date.now()); } catch(e){}
+    _origSave();
+  };
+}
 </script>
 </body>
 </html>
