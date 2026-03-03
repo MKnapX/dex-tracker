@@ -57,8 +57,10 @@ nav{display:flex;gap:4px;flex-wrap:wrap}
 /* ── BOXES ── */
 .bwrap{margin-bottom:22px}
 .bhdr{display:flex;align-items:center;gap:10px;margin-bottom:7px;background:var(--card);border-radius:10px;padding:8px 14px;border-left:4px solid var(--accent)}
-.btitle{font-weight:800;font-size:1rem;color:var(--text);letter-spacing:.04em;text-transform:uppercase}
+.btitle{font-weight:800;font-size:1rem;color:var(--text);letter-spacing:.04em;text-transform:uppercase;flex:1}
 .bcnt{font-size:.78rem;font-weight:700;color:var(--accent);background:var(--bg2);padding:3px 10px;border-radius:10px;vertical-align:middle}
+.bprog{font-size:.78rem;font-weight:700;padding:3px 10px;border-radius:10px;background:var(--bg2);color:var(--text2)}
+.bprog.done{color:var(--caught);background:rgba(74,222,128,.15)}
 .bgrid{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:4px;background:var(--card);border-radius:12px;padding:10px;border:1px solid var(--border)}
 /* ── SLOT ── */
 .slot{position:relative;aspect-ratio:1;border-radius:8px;cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:center;background:var(--uncaught);border:2px solid transparent;transition:border-color .15s,transform .15s;-webkit-tap-highlight-color:transparent;user-select:none}
@@ -98,7 +100,15 @@ nav{display:flex;gap:4px;flex-wrap:wrap}
 .tstat.mis{background:rgba(233,69,96,.2);color:var(--accent)}
 /* ── CONFETTI ── */
 #cc{position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:9999}
-/* ── SEARCH HIGHLIGHT ── */
+/* ── SHARE MODAL ── */
+.modal-bg{position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:300;display:flex;align-items:center;justify-content:center;padding:16px}
+.modal{background:var(--card);border-radius:16px;padding:24px;max-width:400px;width:100%;box-shadow:0 8px 40px var(--shadow)}
+.modal h2{font-size:1.1rem;font-weight:800;margin-bottom:16px}
+.modal-btns{display:flex;flex-direction:column;gap:10px;margin-bottom:16px}
+.mbtn{padding:12px 16px;border-radius:10px;border:none;cursor:pointer;font-weight:700;font-size:.9rem;text-align:left;display:flex;align-items:center;gap:10px;background:var(--card2);color:var(--text);transition:background .2s}
+.mbtn:hover{background:var(--bg3)}
+.mbtn-close{background:transparent;border:1px solid var(--border);color:var(--text2);border-radius:10px;padding:10px;width:100%;cursor:pointer;font-size:.85rem;font-weight:600}
+#share-preview{width:100%;border-radius:10px;margin-bottom:12px;display:none}
 .box-highlight{box-shadow:0 0 0 3px var(--accent),0 4px 24px var(--shadow);border-radius:14px}
 .box-highlight .bgrid{border-color:var(--accent)}
 .box-highlight .btitle{color:var(--accent)}
@@ -128,6 +138,7 @@ nav{display:flex;gap:4px;flex-wrap:wrap}
       <button class="nb" onclick="showSec('dash',this)">📊 Dashboard</button>
     </nav>
     <div class="hdr-r">
+      <button class="dtog" onclick="shareProgress()" title="Share / Export">📤</button>
       <button class="dtog" id="dtog" onclick="toggleDark()">☀️</button>
     </div>
   </div>
@@ -584,8 +595,9 @@ function buildDex(){
   const BOX=30, TOTAL=1025;
   for(let b=0;b<Math.ceil(TOTAL/BOX);b++){
     const s=b*BOX+1, e=Math.min(s+BOX-1,TOTAL);
-    const bw=document.createElement('div'); bw.className='bwrap';
-    bw.innerHTML=`<div class="bhdr"><span class="btitle">Box ${b+1} <span class="bcnt">#${s}–#${e}</span></span></div>`;
+    const boxSize = e - s + 1;
+    const bw=document.createElement('div'); bw.className='bwrap'; bw.dataset.boxStart=s; bw.dataset.boxEnd=e;
+    bw.innerHTML=`<div class="bhdr"><span class="btitle">Box ${b+1} <span class="bcnt">#${s}–#${e}</span></span><span class="bprog" id="bprog-${b}">0/${boxSize}</span></div>`;
     const grid=document.createElement('div'); grid.className='bgrid';
     for(let id=s;id<=e;id++){
       grid.appendChild(mkSlot(id,N[id]||`#${id}`,String(id),false));
@@ -632,6 +644,18 @@ function updateBars(){
   document.getElementById('fpct').textContent=fp+'%';
   document.getElementById('fbar').style.width=fp+'%';
   document.getElementById('fcnt').textContent=`${fc} / ${ft}`;
+
+  // per-box progress
+  document.querySelectorAll('.bwrap[data-box-start]').forEach((bw,b)=>{
+    const s=+bw.dataset.boxStart, e=+bw.dataset.boxEnd;
+    const total=e-s+1;
+    const got=Object.keys(caught).filter(k=>+k>=s&&+k<=e).length;
+    const el=document.getElementById('bprog-'+b);
+    if(el){
+      el.textContent=`${got}/${total}`;
+      el.classList.toggle('done', got===total);
+    }
+  });
 
   FORMS.forEach(cat=>{
     const el=document.getElementById('fcat-'+cat.cat.replace(/\s/g,'_'));
@@ -727,8 +751,123 @@ function launchConfetti(){
 }
 
 // ═══════════════════════════════════════════
-//  INIT
+//  SHARE / EXPORT
 // ═══════════════════════════════════════════
+function shareProgress(){
+  // build modal
+  if(document.getElementById('share-modal')) { document.getElementById('share-modal').style.display='flex'; return; }
+  const bg=document.createElement('div'); bg.className='modal-bg'; bg.id='share-modal';
+  bg.innerHTML=`
+    <div class="modal">
+      <h2>📤 Share & Export</h2>
+      <canvas id="share-preview"></canvas>
+      <div class="modal-btns">
+        <button class="mbtn" onclick="exportCard()">🖼️ Save as Image</button>
+        <button class="mbtn" onclick="copyShareText()">📋 Copy Progress Summary</button>
+        <button class="mbtn" id="native-share-btn" onclick="nativeShare()" style="display:none">📱 Share…</button>
+      </div>
+      <button class="mbtn-close" onclick="document.getElementById('share-modal').style.display='none'">Close</button>
+    </div>`;
+  document.body.appendChild(bg);
+  bg.addEventListener('click', e=>{ if(e.target===bg) bg.style.display='none'; });
+  if(navigator.share) document.getElementById('native-share-btn').style.display='flex';
+  drawCard();
+}
+
+function drawCard(){
+  const cv=document.getElementById('share-preview');
+  if(!cv) return;
+  const W=360, H=200;
+  cv.width=W; cv.height=H; cv.style.display='block';
+  const ctx=cv.getContext('2d');
+
+  // background
+  ctx.fillStyle='#1a1a2e'; ctx.fillRect(0,0,W,H);
+  ctx.fillStyle='#16213e'; ctx.fillRect(0,0,W,60);
+
+  // title
+  ctx.fillStyle='#e94560'; ctx.font='bold 18px system-ui';
+  ctx.fillText('HOME Dex Tracker',16,36);
+
+  // overall %
+  const total=1025;
+  const c=Object.keys(caught).filter(k=>+k>=1&&+k<=total).length;
+  const pct=(c/total*100).toFixed(1);
+  ctx.fillStyle='#e0e0e0'; ctx.font='bold 36px system-ui';
+  ctx.fillText(pct+'%',16,105);
+  ctx.fillStyle='#a0aec0'; ctx.font='14px system-ui';
+  ctx.fillText(`${c} / ${total} Pokémon caught`,16,125);
+
+  // progress bar
+  const bx=16,by=140,bw=W-32,bh=12;
+  ctx.fillStyle='#2d3748'; ctx.beginPath();
+  ctx.roundRect(bx,by,bw,bh,6); ctx.fill();
+  ctx.fillStyle='#4ade80';
+  const fw=Math.round(bw*(c/total));
+  if(fw>0){ ctx.beginPath(); ctx.roundRect(bx,by,fw,bh,6); ctx.fill(); }
+
+  // gen bars
+  const gx=16, gy=165, gh=8, gw=(W-32-8*8)/9;
+  GENS.forEach((g,i)=>{
+    const gt=g.e-g.s+1;
+    const gc=Object.keys(caught).filter(k=>+k>=g.s&&+k<=g.e).length;
+    const x=gx+i*(gw+8);
+    ctx.fillStyle='#2d3748'; ctx.beginPath();
+    ctx.roundRect(x,gy,gw,gh,3); ctx.fill();
+    ctx.fillStyle=g.c;
+    const fw2=Math.round(gw*(gc/gt));
+    if(fw2>0){ ctx.beginPath(); ctx.roundRect(x,gy,fw2,gh,3); ctx.fill(); }
+    ctx.fillStyle=g.c; ctx.font='bold 9px system-ui';
+    ctx.fillText('G'+g.n, x+(gw/2)-7, gy+gh+11);
+  });
+
+  // date
+  ctx.fillStyle='#4a5568'; ctx.font='11px system-ui';
+  ctx.fillText(new Date().toLocaleDateString(), W-80, H-8);
+}
+
+function exportCard(){
+  drawCard();
+  const cv=document.getElementById('share-preview');
+  const link=document.createElement('a');
+  link.download='homedex-progress.png';
+  link.href=cv.toDataURL('image/png');
+  link.click();
+}
+
+function copyShareText(){
+  const total=1025;
+  const c=Object.keys(caught).filter(k=>+k>=1&&+k<=total).length;
+  const pct=(c/total*100).toFixed(1);
+  const lines=GENS.map(g=>{
+    const gt=g.e-g.s+1;
+    const gc=Object.keys(caught).filter(k=>+k>=g.s&&+k<=g.e).length;
+    return `Gen ${g.n}: ${gc}/${gt} (${(gc/gt*100).toFixed(0)}%)`;
+  });
+  const text=`🏠 HOME Dex Progress\n${pct}% complete — ${c}/1025\n\n${lines.join('\n')}\n\nhttps://github.com`;
+  navigator.clipboard.writeText(text).then(()=>{
+    const btn=document.querySelector('.modal-btns .mbtn');
+    const orig=btn.innerHTML; btn.innerHTML='✅ Copied!';
+    setTimeout(()=>btn.innerHTML=orig,2000);
+  });
+}
+
+async function nativeShare(){
+  drawCard();
+  const cv=document.getElementById('share-preview');
+  const total=1025;
+  const c=Object.keys(caught).filter(k=>+k>=1&&+k<=total).length;
+  const pct=(c/total*100).toFixed(1);
+  try {
+    const blob=await new Promise(r=>cv.toBlob(r,'image/png'));
+    const file=new File([blob],'homedex.png',{type:'image/png'});
+    await navigator.share({
+      title:'HOME Dex Progress',
+      text:`I've caught ${c}/1025 Pokémon (${pct}%) in my HOME Dex!`,
+      files:[file]
+    });
+  } catch(e){ console.log('Share cancelled',e); }
+}
 load();
 document.body.classList.toggle('light',!dark);
 document.getElementById('dtog').textContent=dark?'☀️ Light':'🌙 Dark';
