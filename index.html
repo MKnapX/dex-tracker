@@ -37,7 +37,7 @@ nav{display:flex;gap:4px;flex-wrap:wrap}
 .hdr-r{display:flex;gap:8px;align-items:center;margin-left:auto}
 .dtog{background:var(--bg3);border:none;border-radius:20px;padding:6px 13px;color:var(--text);cursor:pointer;font-size:.82rem;font-weight:600}
 /* ── SEARCH BAR ── */
-#sbar{background:var(--bg2);padding:10px 16px;border-bottom:1px solid var(--border);position:-webkit-sticky;position:sticky;top:57px;z-index:99;width:100%}
+#sbar{background:var(--bg2);padding:10px 16px;border-bottom:1px solid var(--border);position:-webkit-sticky;position:sticky;top:var(--hdr-h,57px);z-index:99;width:100%}
 .sbar-i{max-width:1400px;margin:0 auto;display:flex;gap:8px;flex-wrap:wrap;align-items:center}
 #sinp{flex:1;min-width:140px;padding:7px 14px;border-radius:20px;border:1px solid var(--border);background:var(--card);color:var(--text);font-size:.88rem}
 .fsel{padding:7px 11px;border-radius:20px;border:1px solid var(--border);background:var(--card);color:var(--text);font-size:.82rem;cursor:pointer}
@@ -127,7 +127,7 @@ nav{display:flex;gap:4px;flex-wrap:wrap}
       <button class="nb" onclick="showSec('dash',this)">📊 Dashboard</button>
     </nav>
     <div class="hdr-r">
-      <button class="dtog" id="dtog" onclick="toggleDark()">☀️ Light</button>
+      <button class="dtog" id="dtog" onclick="toggleDark()">☀️</button>
     </div>
   </div>
 </header>
@@ -734,6 +734,14 @@ document.getElementById('dtog').textContent=dark?'☀️ Light':'🌙 Dark';
 buildDex();
 buildForms();
 updateBars();
+
+// measure actual header height so search bar sticks right below it
+function setHdrHeight(){
+  const h = document.getElementById('hdr').offsetHeight;
+  document.documentElement.style.setProperty('--hdr-h', h+'px');
+}
+setHdrHeight();
+window.addEventListener('resize', setHdrHeight);
 </script>
 
 <!-- ═══════════════════════════════════════════
@@ -811,7 +819,7 @@ const firebaseConfig = {
     dark = d.dark !== '0';
 
     document.body.classList.toggle('light', !dark);
-    document.getElementById('dtog').textContent = dark ? '☀️ Light' : '🌙 Dark';
+    document.getElementById('dtog').textContent = dark ? '☀️' : '🌙';
 
     // sync slot classes
     document.querySelectorAll('.slot[data-id]').forEach(el => {
