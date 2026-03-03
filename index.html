@@ -60,16 +60,14 @@ nav{display:flex;gap:4px;flex-wrap:wrap}
 .bgrid{display:grid;grid-template-columns:repeat(6,1fr);gap:4px;background:var(--card);border-radius:12px;padding:10px;border:1px solid var(--border)}
 /* ── SLOT ── */
 .slot{position:relative;aspect-ratio:1;border-radius:8px;cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:center;background:var(--uncaught);border:2px solid transparent;transition:border-color .15s,transform .15s;-webkit-tap-highlight-color:transparent;user-select:none}
-@media(hover:hover){.slot:hover{border-color:var(--accent);transform:scale(1.06);z-index:2}}
+@media(hover:hover){.slot:hover{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent)44;z-index:2}}
 .slot.got{background:var(--card2);border-color:var(--caught)}
 .slot img{width:74%;height:74%;object-fit:contain;image-rendering:pixelated;filter:brightness(.28) grayscale(1);transition:filter .2s;pointer-events:none}
 .slot.got img{filter:none}
 .snum{font-size:.58rem;font-weight:700;color:var(--text2);line-height:1;margin-top:1px;pointer-events:none}
-.sname{font-size:.48rem;color:var(--text2);text-align:center;line-height:1;margin-top:1px;display:none;pointer-events:none}
-.slot:hover .sname{display:block}
+.sname{font-size:.48rem;color:var(--text2);text-align:center;line-height:1;margin-top:1px;pointer-events:none}
 .slot.got .snum,.slot.got .sname{color:var(--caught)}
-.slot.hold{animation:pulse .3s infinite alternate}
-@keyframes pulse{from{transform:scale(1.05)}to{transform:scale(1.13)}}
+.slot.hold{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent)66;}
 /* ── FORMS ── */
 .fcat{margin-bottom:20px}
 .fcattitle{font-size:.95rem;font-weight:700;padding:8px 12px;border-radius:8px;margin-bottom:8px;display:flex;align-items:center;gap:8px}
@@ -793,11 +791,6 @@ const firebaseConfig = {
   appId:             "1:367012022030:web:20d16e62168ff8658b395f"
 };
 // ──────────────────────────────────────────
-
-// Guard: skip if config hasn't been filled in
-if (firebaseConfig.apiKey === 'YOUR_API_KEY') {
-  console.info('[HOME Dex] Firebase not configured — using localStorage only.');
-} else {
   const app  = initializeApp(firebaseConfig);
   const db   = getFirestore(app);
   const auth = getAuth(app);
