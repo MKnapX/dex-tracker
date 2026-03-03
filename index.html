@@ -54,13 +54,13 @@ nav{display:flex;gap:4px;flex-wrap:wrap}
 .cnum{font-size:.85rem;color:var(--text2)}
 /* ── BOXES ── */
 .bwrap{margin-bottom:22px}
-.bhdr{display:flex;align-items:center;gap:10px;margin-bottom:7px}
-.btitle{font-weight:700;font-size:.9rem;color:var(--text2)}
-.bcnt{font-size:.78rem;color:var(--text2);background:var(--card);padding:2px 10px;border-radius:10px}
+.bhdr{display:flex;align-items:center;gap:10px;margin-bottom:7px;background:var(--card);border-radius:10px;padding:8px 14px;border-left:4px solid var(--accent)}
+.btitle{font-weight:800;font-size:1rem;color:var(--text);letter-spacing:.04em;text-transform:uppercase}
+.bcnt{font-size:.78rem;font-weight:700;color:var(--accent);background:var(--bg2);padding:3px 10px;border-radius:10px;vertical-align:middle}
 .bgrid{display:grid;grid-template-columns:repeat(6,1fr);gap:4px;background:var(--card);border-radius:12px;padding:10px;border:1px solid var(--border)}
 /* ── SLOT ── */
 .slot{position:relative;aspect-ratio:1;border-radius:8px;cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:center;background:var(--uncaught);border:2px solid transparent;transition:border-color .15s,transform .15s;-webkit-tap-highlight-color:transparent;user-select:none}
-.slot:hover{border-color:var(--accent);transform:scale(1.06);z-index:2}
+@media(hover:hover){.slot:hover{border-color:var(--accent);transform:scale(1.06);z-index:2}}
 .slot.got{background:var(--card2);border-color:var(--caught)}
 .slot img{width:74%;height:74%;object-fit:contain;image-rendering:pixelated;filter:brightness(.28) grayscale(1);transition:filter .2s;pointer-events:none}
 .slot.got img{filter:none}
@@ -70,8 +70,6 @@ nav{display:flex;gap:4px;flex-wrap:wrap}
 .slot.got .snum,.slot.got .sname{color:var(--caught)}
 .slot.hold{animation:pulse .3s infinite alternate}
 @keyframes pulse{from{transform:scale(1.05)}to{transform:scale(1.13)}}
-/* ── GEN DIVIDER ── */
-.gdiv{grid-column:1/-1;text-align:center;font-size:.68rem;font-weight:700;padding:3px;border-radius:4px;margin:2px 0}
 /* ── FORMS ── */
 .fcat{margin-bottom:20px}
 .fcattitle{font-size:.95rem;font-weight:700;padding:8px 12px;border-radius:8px;margin-bottom:8px;display:flex;align-items:center;gap:8px}
@@ -100,6 +98,10 @@ nav{display:flex;gap:4px;flex-wrap:wrap}
 .tstat.mis{background:rgba(233,69,96,.2);color:var(--accent)}
 /* ── CONFETTI ── */
 #cc{position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:9999}
+/* ── SEARCH HIGHLIGHT ── */
+.box-highlight{box-shadow:0 0 0 3px var(--accent),0 4px 24px var(--shadow);border-radius:14px}
+.box-highlight .bgrid{border-color:var(--accent)}
+.box-highlight .btitle{color:var(--accent)}
 /* ── MOBILE ── */
 @media(max-width:520px){
   .bgrid{gap:3px;padding:6px}
@@ -470,8 +472,12 @@ function setStat(s){
 }
 
 function applyFilters(){
-  const q = document.getElementById('sinp').value.toLowerCase();
+  const q = document.getElementById('sinp').value.toLowerCase().trim();
   const gf = +document.getElementById('gfil').value;
+
+  // collect which box wrappers have a match
+  const matchedBoxes = new Set();
+
   document.querySelectorAll('.slot[data-id]').forEach(el=>{
     const id=+el.dataset.id, nm=(N[id]||'').toLowerCase(), gen=getGen(id);
     let show=true;
@@ -479,7 +485,29 @@ function applyFilters(){
     if(gf && gen.n!==gf) show=false;
     if(statFil==='caught' && !caught[id]) show=false;
     if(statFil==='missing' && caught[id]) show=false;
-    el.style.display=show?'':'none';
+
+    // when searching, always show all slots inside matched boxes —
+    // just flag which boxes contain a hit
+    if(q && (nm.includes(q) || String(id).includes(q))) {
+      const box = el.closest('.bwrap');
+      if(box) matchedBoxes.add(box);
+    }
+
+    // hide/show individual slots only when NOT doing a name/id search
+    if(!q) el.style.display = show ? '' : 'none';
+    else    el.style.display = '';
+  });
+
+  // show/hide/highlight entire boxes based on search
+  document.querySelectorAll('.bwrap').forEach(box=>{
+    if(!q){
+      box.style.display = '';
+      box.classList.remove('box-highlight');
+    } else {
+      const hit = matchedBoxes.has(box);
+      box.style.display = hit ? '' : 'none';
+      box.classList.toggle('box-highlight', hit);
+    }
   });
 }
 
@@ -592,21 +620,9 @@ function buildDex(){
   for(let b=0;b<Math.ceil(TOTAL/BOX);b++){
     const s=b*BOX+1, e=Math.min(s+BOX-1,TOTAL);
     const bw=document.createElement('div'); bw.className='bwrap';
-    bw.innerHTML=`<div class="bhdr"><span class="btitle">Box ${b+1}</span><span class="bcnt">#${s}–#${e}</span></div>`;
+    bw.innerHTML=`<div class="bhdr"><span class="btitle">Box ${b+1} <span class="bcnt">#${s}–#${e}</span></span></div>`;
     const grid=document.createElement('div'); grid.className='bgrid';
-    let lg=null;
     for(let id=s;id<=e;id++){
-      const g=getGen(id);
-      if(g.n!==lg){
-        if(lg!==null){
-          const d=document.createElement('div');
-          d.className='gdiv';
-          d.style.cssText=`background:${g.c}22;color:${g.c}`;
-          d.textContent=`— Gen ${g.n} —`;
-          grid.appendChild(d);
-        }
-        lg=g.n;
-      }
       grid.appendChild(mkSlot(id,N[id]||`#${id}`,String(id),false));
     }
     bw.appendChild(grid);
