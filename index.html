@@ -30,7 +30,6 @@ nav{display:flex;gap:4px;flex:1;min-width:0}
 .nb{padding:7px 10px;border:none;border-radius:20px;cursor:pointer;font-weight:600;font-size:.75rem;background:transparent;color:var(--text2);transition:all .2s;white-space:nowrap}
 .nb.on,.nb:hover{background:var(--accent);color:#fff}
 .hdr-r{display:flex;gap:6px;align-items:center;flex-shrink:0}
-.sync-dot{width:10px;height:10px;border-radius:50%;background:#f39c12;display:inline-block;transition:background .4s;flex-shrink:0}
 
 /* ── SEARCH BAR ── */
 #sbar{background:var(--bg2);padding:10px 16px;border-bottom:1px solid var(--border);position:-webkit-sticky;position:sticky;top:var(--hdr-h,57px);z-index:99;width:100%}
@@ -49,6 +48,7 @@ nav{display:flex;gap:4px;flex:1;min-width:0}
 .cbar{background:var(--card);border-radius:12px;padding:14px 18px;margin-bottom:16px;display:flex;align-items:center;gap:16px;flex-wrap:wrap}
 .cpct{font-size:2rem;font-weight:800;color:var(--accent)}
 .clbl{font-size:.85rem;color:var(--text2)}
+.sync-dot{width:8px;height:8px;border-radius:50%;background:#f39c12;display:inline-block;transition:background .4s;vertical-align:middle;margin-left:6px}
 .pbar{flex:1;min-width:120px;height:10px;background:var(--uncaught);border-radius:5px;overflow:hidden}
 .pfill{height:100%;background:linear-gradient(90deg,var(--caught),#22c55e);border-radius:5px;transition:width .4s}
 .cnum{font-size:.85rem;color:var(--text2)}
@@ -134,9 +134,7 @@ nav{display:flex;gap:4px;flex:1;min-width:0}
       <button class="nb" onclick="showSec('forms',this)">✨ Forms</button>
       <button class="nb" onclick="showSec('dash',this)">📊 Dashboard</button>
     </nav>
-    <div class="hdr-r">
-      <span class="sync-dot" id="sync-dot" title="Connecting…"></span>
-    </div>
+    <div class="hdr-r"></div>
   </div>
 </header>
 
@@ -163,7 +161,10 @@ nav{display:flex;gap:4px;flex:1;min-width:0}
 
 <div id="sec-dex" class="sec on">
   <div class="cbar">
-    <div><div class="cpct" id="mpct">0%</div><div class="clbl">Main Dex Complete (#1–1025)</div></div>
+    <div>
+      <div class="cpct" id="mpct">0%</div>
+      <div class="clbl">Main Dex Complete (#1–1025) <span class="sync-dot" id="sync-dot" title="Connecting…"></span></div>
+    </div>
     <div class="pbar"><div class="pfill" id="mbar" style="width:0%"></div></div>
     <div class="cnum" id="mcnt">0 / 1025</div>
   </div>
@@ -379,14 +380,8 @@ function localLoad(){
     ownedGames  = JSON.parse(localStorage.getItem('pht_games') ||'{}');
   }catch(e){}
 }
-
-// called by Firebase module once loaded, or no-op if Firebase fails
-window.cloudSave = ()=>{};
-
-function save(){
-  localSave();
-  window.cloudSave();
-}
+window.cloudSave = function(){};
+function save(){ localSave(); window.cloudSave(); }
 
 // ═══════════════════════════════════════════
 //  SYNC DOT
@@ -510,21 +505,8 @@ function mkSlot(id,nm,sprId,isF){
   el.append(img,snum,snm);
 
   let held=false;
-  const onDown=e=>{
-    held=false;
-    holdT=setTimeout(()=>{
-      held=true;
-      el.classList.add('hold');
-      if(navigator.vibrate) navigator.vibrate(25);
-      toggleCatch(id,isF);
-      el.classList.remove('hold');
-    },380);
-  };
-  const onUp=e=>{
-    clearTimeout(holdT);
-    el.classList.remove('hold');
-    if(!held){ const isC=isF?!!formsCaught[id]:!!caught[id]; showTip(e,id,nm,isC); }
-  };
+  const onDown=e=>{ held=false; holdT=setTimeout(()=>{ held=true; el.classList.add('hold'); if(navigator.vibrate) navigator.vibrate(25); toggleCatch(id,isF); el.classList.remove('hold'); },380); };
+  const onUp=e=>{ clearTimeout(holdT); el.classList.remove('hold'); if(!held){ const isC=isF?!!formsCaught[id]:!!caught[id]; showTip(e,id,nm,isC); } };
   el.addEventListener('mousedown',onDown);
   el.addEventListener('mouseup',onUp);
   el.addEventListener('mouseleave',()=>{ clearTimeout(holdT); el.classList.remove('hold'); });
@@ -675,19 +657,15 @@ window.addEventListener('resize',setHdrHeight);
 </script>
 
 <!-- ═══════════════════════════════════════════
-     FIREBASE (compat SDK — works on all browsers including iOS Safari)
+     FIREBASE (compat SDK)
      ═══════════════════════════════════════════ -->
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
 <script>
 (function initFirebase(){
-  if(typeof firebase === 'undefined'){
-    setTimeout(initFirebase, 100);
-    return;
-  }
+  if(typeof firebase==='undefined'){ setTimeout(initFirebase,100); return; }
 
-  var config = {
+  var config={
     apiKey:            "AIzaSyDae6M9iE9OHI78gsa8Dn5FGD2ynWdiUPc",
     authDomain:        "dex-tracker-ebc8d.firebaseapp.com",
     projectId:         "dex-tracker-ebc8d",
@@ -696,60 +674,45 @@ window.addEventListener('resize',setHdrHeight);
     appId:             "1:367012022030:web:20d16e62168ff8658b395f"
   };
 
-  try {
-    firebase.initializeApp(config);
-  } catch(e) {
-    console.error('[HOME Dex] Firebase init failed:', e);
-    setSyncStatus('error');
-    return;
-  }
+  try{ firebase.initializeApp(config); }
+  catch(e){ console.error('[HOME Dex] Firebase init failed:',e); setSyncStatus('error'); return; }
 
-  var db   = firebase.firestore();
-  var auth = firebase.auth();
-  var uid  = null;
-  var saveTimer = null;
+  var db=firebase.firestore();
+  var DOC=db.collection('shared').doc('progress');
+  var saveTimer=null;
 
-  window.cloudSave = function(){
+  window.cloudSave=function(){
     clearTimeout(saveTimer);
-    saveTimer = setTimeout(function(){
-      if(!uid) return;
+    saveTimer=setTimeout(function(){
       setSyncStatus('syncing');
-      db.collection('users').doc(uid).collection('data').doc('progress').set({
+      DOC.set({
         caught:      JSON.stringify(caught),
         formsCaught: JSON.stringify(formsCaught),
         ownedGames:  JSON.stringify(ownedGames),
         updatedAt:   Date.now()
-      }).then(function(){
-        setSyncStatus('ok');
-      }).catch(function(e){
-        console.error('[HOME Dex] Save error:', e);
-        setSyncStatus('error');
-      });
-    }, 800);
+      }).then(function(){ setSyncStatus('ok'); })
+        .catch(function(e){ console.error('[HOME Dex] Save error:',e); setSyncStatus('error'); });
+    },800);
   };
 
-  auth.signInAnonymously().catch(function(e){
-    console.error('[HOME Dex] Auth error:', e);
-    setSyncStatus('error');
-  });
+  setSyncStatus('syncing');
+  DOC.get().then(function(snap){
+    if(snap.exists){
+      var cloud=snap.data();
+      var cloudTs=cloud.updatedAt||0;
+      var localTs=+localStorage.getItem('pht_ts')||0;
+      if(cloudTs>=localTs) applyCloudData(cloud);
+    }
+    setSyncStatus('ok');
 
-  auth.onAuthStateChanged(function(user){
-    if(!user) return;
-    uid = user.uid;
-    setSyncStatus('syncing');
-    db.collection('users').doc(uid).collection('data').doc('progress').get().then(function(snap){
-      if(snap.exists){
-        var cloud = snap.data();
-        var cloudTs = cloud.updatedAt || 0;
-        var localTs = +localStorage.getItem('pht_ts') || 0;
-        if(cloudTs >= localTs) applyCloudData(cloud);
-      }
-      setSyncStatus('ok');
-    }).catch(function(e){
-      console.error('[HOME Dex] Load error:', e);
-      setSyncStatus('error');
+    DOC.onSnapshot(function(snap){
+      if(!snap.exists) return;
+      var cloud=snap.data();
+      var cloudTs=cloud.updatedAt||0;
+      var localTs=+localStorage.getItem('pht_ts')||0;
+      if(cloudTs>localTs) applyCloudData(cloud);
     });
-  });
+  }).catch(function(e){ console.error('[HOME Dex] Load error:',e); setSyncStatus('error'); });
 })();
 </script>
 </body>
