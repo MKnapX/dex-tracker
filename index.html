@@ -10,32 +10,28 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <style>
-:root {
+:root{
   --bg:#1a1a2e;--bg2:#16213e;--bg3:#0f3460;
   --card:#1e2a4a;--card2:#253560;
   --text:#e0e0e0;--text2:#a0aec0;
   --accent:#e94560;--caught:#4ade80;--uncaught:#2d3748;
   --border:#2d3748;--shadow:rgba(0,0,0,.4);
 }
-.light {
-  --bg:#f0f4f8;--bg2:#e2e8f0;--bg3:#cbd5e0;
-  --card:#fff;--card2:#f7fafc;
-  --text:#1a202c;--text2:#4a5568;
-  --uncaught:#e2e8f0;--border:#cbd5e0;--shadow:rgba(0,0,0,.1);
-}
 *{box-sizing:border-box;margin:0;padding:0}
 html,body{height:100%;overflow-x:hidden}
-body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--bg);color:var(--text);min-height:100vh;transition:background .3s,color .3s}
+body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--bg);color:var(--text);min-height:100vh}
+
 /* ── HEADER ── */
 #hdr{position:-webkit-sticky;position:sticky;top:0;z-index:100;background:var(--bg2);border-bottom:2px solid var(--accent);padding:0 16px;box-shadow:0 2px 12px var(--shadow)}
-.hdr-inner{max-width:1400px;margin:0 auto;display:flex;align-items:center;gap:10px;flex-wrap:wrap;padding:10px 0}
-.logo{font-size:1.2rem;font-weight:800;color:var(--accent);white-space:nowrap}
+.hdr-inner{max-width:1400px;margin:0 auto;display:flex;align-items:center;gap:8px;padding:8px 0;flex-wrap:nowrap}
+.logo{font-size:1.1rem;font-weight:800;color:var(--accent);white-space:nowrap;flex-shrink:0}
 .logo span{color:var(--text)}
-nav{display:flex;gap:4px;flex-wrap:wrap}
-.nb{padding:7px 15px;border:none;border-radius:20px;cursor:pointer;font-weight:600;font-size:.82rem;background:transparent;color:var(--text2);transition:all .2s}
+nav{display:flex;gap:4px;flex:1;min-width:0}
+.nb{padding:7px 10px;border:none;border-radius:20px;cursor:pointer;font-weight:600;font-size:.75rem;background:transparent;color:var(--text2);transition:all .2s;white-space:nowrap}
 .nb.on,.nb:hover{background:var(--accent);color:#fff}
-.hdr-r{display:flex;gap:8px;align-items:center;margin-left:auto}
-.dtog{background:var(--bg3);border:none;border-radius:20px;padding:6px 13px;color:var(--text);cursor:pointer;font-size:.82rem;font-weight:600}
+.hdr-r{display:flex;gap:6px;align-items:center;flex-shrink:0}
+.sync-dot{width:10px;height:10px;border-radius:50%;background:#f39c12;display:inline-block;transition:background .4s;flex-shrink:0}
+
 /* ── SEARCH BAR ── */
 #sbar{background:var(--bg2);padding:10px 16px;border-bottom:1px solid var(--border);position:-webkit-sticky;position:sticky;top:var(--hdr-h,57px);z-index:99;width:100%}
 .sbar-i{max-width:1400px;margin:0 auto;display:flex;gap:6px;align-items:center;flex-wrap:nowrap;overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none}
@@ -44,9 +40,11 @@ nav{display:flex;gap:4px;flex-wrap:wrap}
 .fsel{padding:7px 8px;border-radius:20px;border:1px solid var(--border);background:var(--card);color:var(--text);font-size:.78rem;cursor:pointer;flex-shrink:0}
 .fbtn{padding:7px 11px;border-radius:20px;border:none;cursor:pointer;font-size:.78rem;font-weight:600;background:var(--card2);color:var(--text2);transition:all .2s;white-space:nowrap;flex-shrink:0}
 .fbtn.on{background:var(--accent);color:#fff}
+
 /* ── SECTIONS ── */
 .sec{display:none;max-width:1400px;margin:0 auto;padding:16px}
 .sec.on{display:block}
+
 /* ── COMPLETION HEADER ── */
 .cbar{background:var(--card);border-radius:12px;padding:14px 18px;margin-bottom:16px;display:flex;align-items:center;gap:16px;flex-wrap:wrap}
 .cpct{font-size:2rem;font-weight:800;color:var(--accent)}
@@ -54,6 +52,7 @@ nav{display:flex;gap:4px;flex-wrap:wrap}
 .pbar{flex:1;min-width:120px;height:10px;background:var(--uncaught);border-radius:5px;overflow:hidden}
 .pfill{height:100%;background:linear-gradient(90deg,var(--caught),#22c55e);border-radius:5px;transition:width .4s}
 .cnum{font-size:.85rem;color:var(--text2)}
+
 /* ── BOXES ── */
 .bwrap{margin-bottom:22px}
 .bhdr{display:flex;align-items:center;gap:10px;margin-bottom:7px;background:var(--card);border-radius:10px;padding:8px 14px;border-left:4px solid var(--accent)}
@@ -62,8 +61,9 @@ nav{display:flex;gap:4px;flex-wrap:wrap}
 .bprog{font-size:.78rem;font-weight:700;padding:3px 10px;border-radius:10px;background:var(--bg2);color:var(--text2)}
 .bprog.done{color:var(--caught);background:rgba(74,222,128,.15)}
 .bgrid{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:4px;background:var(--card);border-radius:12px;padding:10px;border:1px solid var(--border)}
+
 /* ── SLOT ── */
-.slot{position:relative;aspect-ratio:1;border-radius:8px;cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:center;background:var(--uncaught);border:2px solid transparent;transition:border-color .15s,transform .15s;-webkit-tap-highlight-color:transparent;user-select:none}
+.slot{position:relative;aspect-ratio:1;border-radius:8px;cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:center;background:var(--uncaught);border:2px solid transparent;transition:border-color .15s;-webkit-tap-highlight-color:transparent;user-select:none}
 @media(hover:hover){.slot:hover{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent)44;z-index:2}}
 .slot.got{background:var(--card2);border-color:var(--caught)}
 .slot img{width:74%;height:74%;object-fit:contain;image-rendering:pixelated;filter:brightness(.28) grayscale(1);transition:filter .2s;pointer-events:none}
@@ -71,11 +71,13 @@ nav{display:flex;gap:4px;flex-wrap:wrap}
 .snum{font-size:.58rem;font-weight:700;color:var(--text2);line-height:1;margin-top:1px;pointer-events:none}
 .sname{font-size:.48rem;color:var(--text2);text-align:center;line-height:1;margin-top:1px;pointer-events:none}
 .slot.got .snum,.slot.got .sname{color:var(--caught)}
-.slot.hold{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent)66;}
+.slot.hold{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent)66}
+
 /* ── FORMS ── */
 .fcat{margin-bottom:20px}
 .fcattitle{font-size:.95rem;font-weight:700;padding:8px 12px;border-radius:8px;margin-bottom:8px;display:flex;align-items:center;gap:8px}
 .badge{font-size:.68rem;background:rgba(255,255,255,.15);padding:2px 8px;border-radius:10px}
+
 /* ── DASHBOARD ── */
 .dgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(270px,1fr));gap:16px;margin-bottom:20px}
 .dcard{background:var(--card);border-radius:12px;padding:18px;border:1px solid var(--border)}
@@ -91,6 +93,7 @@ nav{display:flex;gap:4px;flex-wrap:wrap}
 .gchip.own{border-color:var(--caught);background:rgba(74,222,128,.1)}
 .gchip .dot{width:8px;height:8px;border-radius:50%;background:var(--border);flex-shrink:0}
 .gchip.own .dot{background:var(--caught)}
+
 /* ── TOOLTIP ── */
 .tip{position:fixed;background:var(--card);border:1px solid var(--border);border-radius:10px;padding:10px 14px;font-size:.78rem;z-index:200;pointer-events:none;box-shadow:0 4px 20px var(--shadow);max-width:190px;display:none}
 .tname{font-weight:700;font-size:.92rem;margin-bottom:3px}
@@ -98,25 +101,19 @@ nav{display:flex;gap:4px;flex-wrap:wrap}
 .tstat{padding:3px 10px;border-radius:10px;font-size:.72rem;font-weight:700;display:inline-block}
 .tstat.got{background:rgba(74,222,128,.2);color:var(--caught)}
 .tstat.mis{background:rgba(233,69,96,.2);color:var(--accent)}
-/* ── CONFETTI ── */
-#cc{position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:9999}
-/* ── SHARE MODAL ── */
-.modal-bg{position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:300;display:flex;align-items:center;justify-content:center;padding:16px}
-.modal{background:var(--card);border-radius:16px;padding:24px;max-width:400px;width:100%;box-shadow:0 8px 40px var(--shadow)}
-.modal h2{font-size:1.1rem;font-weight:800;margin-bottom:16px}
-.modal-btns{display:flex;flex-direction:column;gap:10px;margin-bottom:16px}
-.mbtn{padding:12px 16px;border-radius:10px;border:none;cursor:pointer;font-weight:700;font-size:.9rem;text-align:left;display:flex;align-items:center;gap:10px;background:var(--card2);color:var(--text);transition:background .2s}
-.mbtn:hover{background:var(--bg3)}
-.mbtn-close{background:transparent;border:1px solid var(--border);color:var(--text2);border-radius:10px;padding:10px;width:100%;cursor:pointer;font-size:.85rem;font-weight:600}
-#share-preview{width:100%;border-radius:10px;margin-bottom:12px;display:none}
+
+/* ── SEARCH HIGHLIGHT ── */
 .box-highlight{box-shadow:0 0 0 3px var(--accent),0 4px 24px var(--shadow);border-radius:14px}
 .box-highlight .bgrid{border-color:var(--accent)}
 .box-highlight .btitle{color:var(--accent)}
+
+/* ── CONFETTI ── */
+#cc{position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:9999}
+
 /* ── MOBILE ── */
 @media(max-width:520px){
   .bgrid{gap:3px;padding:6px}
   .snum{font-size:.5rem}
-  .hdr-inner{gap:7px}
 }
 </style>
 </head>
@@ -138,8 +135,7 @@ nav{display:flex;gap:4px;flex-wrap:wrap}
       <button class="nb" onclick="showSec('dash',this)">📊 Dashboard</button>
     </nav>
     <div class="hdr-r">
-      <button class="dtog" onclick="shareProgress()" title="Share / Export">📤</button>
-      <button class="dtog" id="dtog" onclick="toggleDark()">☀️</button>
+      <span class="sync-dot" id="sync-dot" title="Connecting…"></span>
     </div>
   </div>
 </header>
@@ -202,7 +198,6 @@ const GENS=[
   {n:7,s:722,e:809,c:'#ff5722'},{n:8,s:810,e:905,c:'#00bcd4'},
   {n:9,s:906,e:1025,c:'#795548'},
 ];
-
 const N={
   1:'Bulbasaur',2:'Ivysaur',3:'Venusaur',4:'Charmander',5:'Charmeleon',6:'Charizard',7:'Squirtle',8:'Wartortle',9:'Blastoise',10:'Caterpie',
   11:'Metapod',12:'Butterfree',13:'Weedle',14:'Kakuna',15:'Beedrill',16:'Pidgey',17:'Pidgeotto',18:'Pidgeot',19:'Rattata',20:'Raticate',
@@ -312,63 +307,37 @@ const N={
 
 const FORMS=[
   {cat:'Alolan Forms',col:'#00bcd4',list:[
-    {id:'a-rattata',nm:'Rattata-Alola',sp:'10091'},
-    {id:'a-raticate',nm:'Raticate-Alola',sp:'10092'},
-    {id:'a-raichu',nm:'Raichu-Alola',sp:'10100'},
-    {id:'a-sandshrew',nm:'Sandshrew-Alola',sp:'10101'},
-    {id:'a-sandslash',nm:'Sandslash-Alola',sp:'10102'},
-    {id:'a-vulpix',nm:'Vulpix-Alola',sp:'10103'},
-    {id:'a-ninetales',nm:'Ninetales-Alola',sp:'10104'},
-    {id:'a-diglett',nm:'Diglett-Alola',sp:'10105'},
-    {id:'a-dugtrio',nm:'Dugtrio-Alola',sp:'10106'},
-    {id:'a-meowth',nm:'Meowth-Alola',sp:'10107'},
-    {id:'a-persian',nm:'Persian-Alola',sp:'10108'},
-    {id:'a-geodude',nm:'Geodude-Alola',sp:'10109'},
-    {id:'a-graveler',nm:'Graveler-Alola',sp:'10110'},
-    {id:'a-golem',nm:'Golem-Alola',sp:'10111'},
-    {id:'a-grimer',nm:'Grimer-Alola',sp:'10112'},
-    {id:'a-muk',nm:'Muk-Alola',sp:'10113'},
-    {id:'a-exeggutor',nm:'Exeggutor-Alola',sp:'10114'},
-    {id:'a-marowak',nm:'Marowak-Alola',sp:'10115'},
+    {id:'a-rattata',nm:'Rattata-Alola',sp:'10091'},{id:'a-raticate',nm:'Raticate-Alola',sp:'10092'},
+    {id:'a-raichu',nm:'Raichu-Alola',sp:'10100'},{id:'a-sandshrew',nm:'Sandshrew-Alola',sp:'10101'},
+    {id:'a-sandslash',nm:'Sandslash-Alola',sp:'10102'},{id:'a-vulpix',nm:'Vulpix-Alola',sp:'10103'},
+    {id:'a-ninetales',nm:'Ninetales-Alola',sp:'10104'},{id:'a-diglett',nm:'Diglett-Alola',sp:'10105'},
+    {id:'a-dugtrio',nm:'Dugtrio-Alola',sp:'10106'},{id:'a-meowth',nm:'Meowth-Alola',sp:'10107'},
+    {id:'a-persian',nm:'Persian-Alola',sp:'10108'},{id:'a-geodude',nm:'Geodude-Alola',sp:'10109'},
+    {id:'a-graveler',nm:'Graveler-Alola',sp:'10110'},{id:'a-golem',nm:'Golem-Alola',sp:'10111'},
+    {id:'a-grimer',nm:'Grimer-Alola',sp:'10112'},{id:'a-muk',nm:'Muk-Alola',sp:'10113'},
+    {id:'a-exeggutor',nm:'Exeggutor-Alola',sp:'10114'},{id:'a-marowak',nm:'Marowak-Alola',sp:'10115'},
   ]},
   {cat:'Galarian Forms',col:'#8e44ad',list:[
-    {id:'g-meowth',nm:'Meowth-Galar',sp:'10161'},
-    {id:'g-ponyta',nm:'Ponyta-Galar',sp:'10162'},
-    {id:'g-rapidash',nm:'Rapidash-Galar',sp:'10163'},
-    {id:'g-slowpoke',nm:'Slowpoke-Galar',sp:'10164'},
-    {id:'g-slowbro',nm:'Slowbro-Galar',sp:'10165'},
-    {id:'g-farfetchd',nm:"Farfetch'd-Galar",sp:'10166'},
-    {id:'g-weezing',nm:'Weezing-Galar',sp:'10167'},
-    {id:'g-mrmime',nm:'Mr. Mime-Galar',sp:'10168'},
-    {id:'g-corsola',nm:'Corsola-Galar',sp:'10169'},
-    {id:'g-zigzagoon',nm:'Zigzagoon-Galar',sp:'10170'},
-    {id:'g-linoone',nm:'Linoone-Galar',sp:'10171'},
-    {id:'g-darumaka',nm:'Darumaka-Galar',sp:'10172'},
-    {id:'g-darmanitan',nm:'Darmanitan-Galar',sp:'10173'},
-    {id:'g-yamask',nm:'Yamask-Galar',sp:'10174'},
-    {id:'g-stunfisk',nm:'Stunfisk-Galar',sp:'10175'},
-    {id:'g-slowking',nm:'Slowking-Galar',sp:'10176'},
-    {id:'g-articuno',nm:'Articuno-Galar',sp:'10177'},
-    {id:'g-zapdos',nm:'Zapdos-Galar',sp:'10178'},
+    {id:'g-meowth',nm:'Meowth-Galar',sp:'10161'},{id:'g-ponyta',nm:'Ponyta-Galar',sp:'10162'},
+    {id:'g-rapidash',nm:'Rapidash-Galar',sp:'10163'},{id:'g-slowpoke',nm:'Slowpoke-Galar',sp:'10164'},
+    {id:'g-slowbro',nm:'Slowbro-Galar',sp:'10165'},{id:'g-farfetchd',nm:"Farfetch'd-Galar",sp:'10166'},
+    {id:'g-weezing',nm:'Weezing-Galar',sp:'10167'},{id:'g-mrmime',nm:'Mr. Mime-Galar',sp:'10168'},
+    {id:'g-corsola',nm:'Corsola-Galar',sp:'10169'},{id:'g-zigzagoon',nm:'Zigzagoon-Galar',sp:'10170'},
+    {id:'g-linoone',nm:'Linoone-Galar',sp:'10171'},{id:'g-darumaka',nm:'Darumaka-Galar',sp:'10172'},
+    {id:'g-darmanitan',nm:'Darmanitan-Galar',sp:'10173'},{id:'g-yamask',nm:'Yamask-Galar',sp:'10174'},
+    {id:'g-stunfisk',nm:'Stunfisk-Galar',sp:'10175'},{id:'g-slowking',nm:'Slowking-Galar',sp:'10176'},
+    {id:'g-articuno',nm:'Articuno-Galar',sp:'10177'},{id:'g-zapdos',nm:'Zapdos-Galar',sp:'10178'},
     {id:'g-moltres',nm:'Moltres-Galar',sp:'10179'},
   ]},
   {cat:'Hisuian Forms',col:'#27ae60',list:[
-    {id:'h-growlithe',nm:'Growlithe-Hisui',sp:'10229'},
-    {id:'h-arcanine',nm:'Arcanine-Hisui',sp:'10230'},
-    {id:'h-voltorb',nm:'Voltorb-Hisui',sp:'10231'},
-    {id:'h-electrode',nm:'Electrode-Hisui',sp:'10232'},
-    {id:'h-typhlosion',nm:'Typhlosion-Hisui',sp:'10233'},
-    {id:'h-qwilfish',nm:'Qwilfish-Hisui',sp:'10234'},
-    {id:'h-sneasel',nm:'Sneasel-Hisui',sp:'10235'},
-    {id:'h-samurott',nm:'Samurott-Hisui',sp:'10236'},
-    {id:'h-lilligant',nm:'Lilligant-Hisui',sp:'10237'},
-    {id:'h-basculin',nm:'Basculin-Hisui',sp:'10238'},
-    {id:'h-zorua',nm:'Zorua-Hisui',sp:'10239'},
-    {id:'h-zoroark',nm:'Zoroark-Hisui',sp:'10240'},
-    {id:'h-braviary',nm:'Braviary-Hisui',sp:'10241'},
-    {id:'h-sliggoo',nm:'Sliggoo-Hisui',sp:'10242'},
-    {id:'h-goodra',nm:'Goodra-Hisui',sp:'10243'},
-    {id:'h-avalugg',nm:'Avalugg-Hisui',sp:'10244'},
+    {id:'h-growlithe',nm:'Growlithe-Hisui',sp:'10229'},{id:'h-arcanine',nm:'Arcanine-Hisui',sp:'10230'},
+    {id:'h-voltorb',nm:'Voltorb-Hisui',sp:'10231'},{id:'h-electrode',nm:'Electrode-Hisui',sp:'10232'},
+    {id:'h-typhlosion',nm:'Typhlosion-Hisui',sp:'10233'},{id:'h-qwilfish',nm:'Qwilfish-Hisui',sp:'10234'},
+    {id:'h-sneasel',nm:'Sneasel-Hisui',sp:'10235'},{id:'h-samurott',nm:'Samurott-Hisui',sp:'10236'},
+    {id:'h-lilligant',nm:'Lilligant-Hisui',sp:'10237'},{id:'h-basculin',nm:'Basculin-Hisui',sp:'10238'},
+    {id:'h-zorua',nm:'Zorua-Hisui',sp:'10239'},{id:'h-zoroark',nm:'Zoroark-Hisui',sp:'10240'},
+    {id:'h-braviary',nm:'Braviary-Hisui',sp:'10241'},{id:'h-sliggoo',nm:'Sliggoo-Hisui',sp:'10242'},
+    {id:'h-goodra',nm:'Goodra-Hisui',sp:'10243'},{id:'h-avalugg',nm:'Avalugg-Hisui',sp:'10244'},
     {id:'h-decidueye',nm:'Decidueye-Hisui',sp:'10245'},
   ]},
   {cat:'Paldean Forms',col:'#e74c3c',list:[
@@ -377,7 +346,6 @@ const FORMS=[
     {id:'p-tauros-a',nm:'Tauros-Paldea (Aqua)',sp:'10252'},
     {id:'p-wooper',nm:'Wooper-Paldea',sp:'10253'},
   ]},
-
 ];
 
 const GAMES=[
@@ -391,54 +359,60 @@ const GAMES=[
 // ═══════════════════════════════════════════
 //  STATE
 // ═══════════════════════════════════════════
-let caught={}, formsCaught={}, ownedGames={}, dark=true, statFil='all', holdT=null;
+let caught={}, formsCaught={}, ownedGames={}, statFil='all', holdT=null;
 
 // ═══════════════════════════════════════════
-//  STORAGE  (localStorage + Firestore cloud)
+//  LOCAL STORAGE
 // ═══════════════════════════════════════════
-function save(){
+function localSave(){
   try{
     localStorage.setItem('pht_caught', JSON.stringify(caught));
     localStorage.setItem('pht_forms',  JSON.stringify(formsCaught));
     localStorage.setItem('pht_games',  JSON.stringify(ownedGames));
-    localStorage.setItem('pht_dark',   dark?'1':'0');
+    localStorage.setItem('pht_ts',     Date.now());
   }catch(e){}
-  cloudSave();
 }
-function load(){
+function localLoad(){
   try{
-    caught       = JSON.parse(localStorage.getItem('pht_caught')||'{}');
-    formsCaught  = JSON.parse(localStorage.getItem('pht_forms') ||'{}');
-    ownedGames   = JSON.parse(localStorage.getItem('pht_games') ||'{}');
-    const d = localStorage.getItem('pht_dark');
-    dark = d===null ? true : d==='1';
+    caught      = JSON.parse(localStorage.getItem('pht_caught')||'{}');
+    formsCaught = JSON.parse(localStorage.getItem('pht_forms') ||'{}');
+    ownedGames  = JSON.parse(localStorage.getItem('pht_games') ||'{}');
   }catch(e){}
 }
-// stub — replaced by Firebase module once loaded
-function cloudSave(){}
+
+// called by Firebase module once loaded, or no-op if Firebase fails
+window.cloudSave = ()=>{};
+
+function save(){
+  localSave();
+  window.cloudSave();
+}
+
+// ═══════════════════════════════════════════
+//  SYNC DOT
+// ═══════════════════════════════════════════
+function setSyncStatus(s){
+  const dot=document.getElementById('sync-dot');
+  if(!dot) return;
+  dot.style.background = s==='ok'?'#4ade80':s==='error'?'#e94560':'#f39c12';
+  dot.title = s==='ok'?'Synced':s==='error'?'Sync error':'Connecting…';
+}
 
 // ═══════════════════════════════════════════
 //  HELPERS
 // ═══════════════════════════════════════════
-const SPRITE_BASE = 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/';
-const FALLBACK_SVG = `data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 120 120'%3E%3Ccircle cx='60' cy='60' r='54' fill='%23374151' stroke='%234b5563' stroke-width='4'/%3E%3Cpath d='M6 60h108M34 60a26 26 0 0 1 52 0' fill='none' stroke='%236b7280' stroke-width='6'/%3E%3Ccircle cx='60' cy='60' r='14' fill='%234b5563' stroke='%236b7280' stroke-width='4'/%3E%3Ccircle cx='60' cy='60' r='6' fill='%239ca3af'/%3E%3C/svg%3E`;
-const spr = id => `${SPRITE_BASE}${id}.png`;
-const getGen = n => GENS.find(g=>n>=g.s&&n<=g.e)||GENS[0];
-const pad = n => String(n).padStart(4,'0');
+const SPRITE_BASE='https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/';
+const FALLBACK_SVG="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 120 120'%3E%3Ccircle cx='60' cy='60' r='54' fill='%23374151' stroke='%234b5563' stroke-width='4'/%3E%3Cpath d='M6 60h108M34 60a26 26 0 0 1 52 0' fill='none' stroke='%236b7280' stroke-width='6'/%3E%3Ccircle cx='60' cy='60' r='14' fill='%234b5563' stroke='%236b7280' stroke-width='4'/%3E%3Ccircle cx='60' cy='60' r='6' fill='%239ca3af'/%3E%3C/svg%3E";
+const spr=id=>`${SPRITE_BASE}${id}.png`;
+const getGen=n=>GENS.find(g=>n>=g.s&&n<=g.e)||GENS[0];
+const pad=n=>String(n).padStart(4,'0');
 
-function showSec(id, btn){
+function showSec(id,btn){
   document.querySelectorAll('.sec').forEach(s=>s.classList.remove('on'));
   document.querySelectorAll('.nb').forEach(b=>b.classList.remove('on'));
   document.getElementById('sec-'+id).classList.add('on');
   btn.classList.add('on');
   if(id==='dash') renderDash();
-}
-
-function toggleDark(){
-  dark=!dark;
-  document.body.classList.toggle('light',!dark);
-  document.getElementById('dtog').textContent = dark?'☀️ Light':'🌙 Dark';
-  save();
 }
 
 function setStat(s){
@@ -448,42 +422,26 @@ function setStat(s){
 }
 
 function applyFilters(){
-  const q = document.getElementById('sinp').value.toLowerCase().trim();
-  const gf = +document.getElementById('gfil').value;
-
-  // collect which box wrappers have a match
-  const matchedBoxes = new Set();
-
+  const q=document.getElementById('sinp').value.toLowerCase().trim();
+  const gf=+document.getElementById('gfil').value;
+  const matchedBoxes=new Set();
   document.querySelectorAll('.slot[data-id]').forEach(el=>{
-    const id=+el.dataset.id, nm=(N[id]||'').toLowerCase(), gen=getGen(id);
+    const id=+el.dataset.id,nm=(N[id]||'').toLowerCase(),gen=getGen(id);
     let show=true;
-    if(q && !nm.includes(q) && !String(id).includes(q)) show=false;
-    if(gf && gen.n!==gf) show=false;
-    if(statFil==='caught' && !caught[id]) show=false;
-    if(statFil==='missing' && caught[id]) show=false;
-
-    // when searching, always show all slots inside matched boxes —
-    // just flag which boxes contain a hit
-    if(q && (nm.includes(q) || String(id).includes(q))) {
-      const box = el.closest('.bwrap');
+    if(q&&!nm.includes(q)&&!String(id).includes(q)) show=false;
+    if(gf&&gen.n!==gf) show=false;
+    if(statFil==='caught'&&!caught[id]) show=false;
+    if(statFil==='missing'&&caught[id]) show=false;
+    if(q&&(nm.includes(q)||String(id).includes(q))){
+      const box=el.closest('.bwrap');
       if(box) matchedBoxes.add(box);
     }
-
-    // hide/show individual slots only when NOT doing a name/id search
-    if(!q) el.style.display = show ? '' : 'none';
-    else    el.style.display = '';
+    if(!q) el.style.display=show?'':'none';
+    else el.style.display='';
   });
-
-  // show/hide/highlight entire boxes based on search
   document.querySelectorAll('.bwrap').forEach(box=>{
-    if(!q){
-      box.style.display = '';
-      box.classList.remove('box-highlight');
-    } else {
-      const hit = matchedBoxes.has(box);
-      box.style.display = hit ? '' : 'none';
-      box.classList.toggle('box-highlight', hit);
-    }
+    if(!q){ box.style.display=''; box.classList.remove('box-highlight'); }
+    else{ const hit=matchedBoxes.has(box); box.style.display=hit?'':'none'; box.classList.toggle('box-highlight',hit); }
   });
 }
 
@@ -494,10 +452,7 @@ const tip=document.getElementById('tip');
 let tipTO=null;
 function showTip(e,id,nm,isC){
   document.getElementById('tname').textContent=nm;
-  document.getElementById('tnum').textContent='#'+pad(isC?id:0)+(typeof id==='number'?'':'');
-  // For forms, skip the dex number display
-  if(typeof id==='string'){ document.getElementById('tnum').textContent=nm; }
-  else { document.getElementById('tnum').textContent='#'+pad(id); }
+  document.getElementById('tnum').textContent=typeof id==='number'?'#'+pad(id):nm;
   const s=document.getElementById('tstat');
   s.textContent=isC?'✅ Caught':'❌ Missing';
   s.className='tstat '+(isC?'got':'mis');
@@ -518,18 +473,18 @@ document.addEventListener('scroll',()=>tip.style.display='none');
 // ═══════════════════════════════════════════
 //  SLOT BUILDER
 // ═══════════════════════════════════════════
-function toggleCatch(id, isF){
+function toggleCatch(id,isF){
   if(isF){ formsCaught[id]=!formsCaught[id]; if(!formsCaught[id]) delete formsCaught[id]; }
   else   { caught[id]=!caught[id];            if(!caught[id])      delete caught[id]; }
   save();
   const sel=isF?`[data-fid="${id}"]`:`[data-id="${id}"]`;
   const el=document.querySelector(sel);
-  if(el) el.classList.toggle('got', isF?!!formsCaught[id]:!!caught[id]);
+  if(el) el.classList.toggle('got',isF?!!formsCaught[id]:!!caught[id]);
   updateBars();
   checkConfetti();
 }
 
-function mkSlot(id, nm, sprId, isF){
+function mkSlot(id,nm,sprId,isF){
   const el=document.createElement('div');
   el.className='slot'+((!isF&&caught[id])||(isF&&formsCaught[id])?' got':'');
   if(isF) el.dataset.fid=id; else el.dataset.id=id;
@@ -537,13 +492,11 @@ function mkSlot(id, nm, sprId, isF){
   const img=document.createElement('img');
   img.src=spr(sprId); img.loading='lazy'; img.alt=nm;
   img.onerror=()=>{
-    // fallback 1: pokemondb
-    if(!img.dataset.fb1){
-      img.dataset.fb1='1';
-      // only works for numbered ids
+    if(!img.dataset.fb){
+      img.dataset.fb='1';
       const numId=parseInt(sprId);
-      if(!isNaN(numId) && numId<=1025){
-        img.src=`https://img.pokemondb.net/sprites/home/normal/${(nm||'unknown').toLowerCase().replace(/[^a-z0-9]/g,'-').replace(/-+/g,'-').replace(/^-|-$/g,'')}.png`;
+      if(!isNaN(numId)&&numId<=1025){
+        img.src=`https://img.pokemondb.net/sprites/home/normal/${(nm||'').toLowerCase().replace(/[^a-z0-9]/g,'-').replace(/-+/g,'-').replace(/^-|-$/g,'')}.png`;
         return;
       }
     }
@@ -556,7 +509,6 @@ function mkSlot(id, nm, sprId, isF){
   snm.textContent=nm;
   el.append(img,snum,snm);
 
-  // ── interaction: hold = toggle, tap = tooltip, dblclick = toggle ──
   let held=false;
   const onDown=e=>{
     held=false;
@@ -571,60 +523,49 @@ function mkSlot(id, nm, sprId, isF){
   const onUp=e=>{
     clearTimeout(holdT);
     el.classList.remove('hold');
-    if(!held){
-      const isC=isF?!!formsCaught[id]:!!caught[id];
-      showTip(e,id,nm,isC);
-    }
+    if(!held){ const isC=isF?!!formsCaught[id]:!!caught[id]; showTip(e,id,nm,isC); }
   };
   el.addEventListener('mousedown',onDown);
   el.addEventListener('mouseup',onUp);
-  el.addEventListener('mouseleave',()=>{clearTimeout(holdT);el.classList.remove('hold');});
+  el.addEventListener('mouseleave',()=>{ clearTimeout(holdT); el.classList.remove('hold'); });
   el.addEventListener('touchstart',e=>{e.preventDefault();onDown(e.touches[0]);},{passive:false});
   el.addEventListener('touchend',e=>{e.preventDefault();onUp(e.changedTouches[0]);},{passive:false});
-  el.addEventListener('touchcancel',()=>{clearTimeout(holdT);el.classList.remove('hold');});
+  el.addEventListener('touchcancel',()=>{ clearTimeout(holdT); el.classList.remove('hold'); });
   el.addEventListener('dblclick',()=>toggleCatch(id,isF));
   return el;
 }
 
 // ═══════════════════════════════════════════
-//  BUILD DEX BOXES
+//  BUILD DEX
 // ═══════════════════════════════════════════
 function buildDex(){
-  const wrap=document.getElementById('dex-boxes');
-  wrap.innerHTML='';
-  const BOX=30, TOTAL=1025;
+  const wrap=document.getElementById('dex-boxes'); wrap.innerHTML='';
+  const BOX=30,TOTAL=1025;
   for(let b=0;b<Math.ceil(TOTAL/BOX);b++){
-    const s=b*BOX+1, e=Math.min(s+BOX-1,TOTAL);
-    const boxSize = e - s + 1;
+    const s=b*BOX+1,e=Math.min(s+BOX-1,TOTAL),boxSize=e-s+1;
     const bw=document.createElement('div'); bw.className='bwrap'; bw.dataset.boxStart=s; bw.dataset.boxEnd=e;
     bw.innerHTML=`<div class="bhdr"><span class="btitle">Box ${b+1} <span class="bcnt">#${s}–#${e}</span></span><span class="bprog" id="bprog-${b}">0/${boxSize}</span></div>`;
     const grid=document.createElement('div'); grid.className='bgrid';
-    for(let id=s;id<=e;id++){
-      grid.appendChild(mkSlot(id,N[id]||`#${id}`,String(id),false));
-    }
-    bw.appendChild(grid);
-    wrap.appendChild(bw);
+    for(let id=s;id<=e;id++) grid.appendChild(mkSlot(id,N[id]||`#${id}`,String(id),false));
+    bw.appendChild(grid); wrap.appendChild(bw);
   }
 }
 
 // ═══════════════════════════════════════════
-//  BUILD FORMS BOXES
+//  BUILD FORMS
 // ═══════════════════════════════════════════
 function buildForms(){
-  const wrap=document.getElementById('forms-boxes');
-  wrap.innerHTML='';
+  const wrap=document.getElementById('forms-boxes'); wrap.innerHTML='';
   FORMS.forEach(cat=>{
     const sec=document.createElement('div'); sec.className='fcat';
     const cc=cat.list.filter(f=>formsCaught[f.id]).length;
     const title=document.createElement('div');
-    title.className='fcattitle';
-    title.id='fcat-'+cat.cat.replace(/\s/g,'_');
+    title.className='fcattitle'; title.id='fcat-'+cat.cat.replace(/\s/g,'_');
     title.style.cssText=`background:${cat.col}22;color:${cat.col};border:1px solid ${cat.col}44`;
     title.innerHTML=`${cat.cat} <span class="badge">${cc}/${cat.list.length}</span>`;
     const grid=document.createElement('div'); grid.className='bgrid';
     cat.list.forEach(f=>grid.appendChild(mkSlot(f.id,f.nm,f.sp,true)));
-    sec.append(title,grid);
-    wrap.appendChild(sec);
+    sec.append(title,grid); wrap.appendChild(sec);
   });
 }
 
@@ -645,25 +586,16 @@ function updateBars(){
   document.getElementById('fbar').style.width=fp+'%';
   document.getElementById('fcnt').textContent=`${fc} / ${ft}`;
 
-  // per-box progress
   document.querySelectorAll('.bwrap[data-box-start]').forEach((bw,b)=>{
-    const s=+bw.dataset.boxStart, e=+bw.dataset.boxEnd;
-    const total=e-s+1;
+    const s=+bw.dataset.boxStart,e=+bw.dataset.boxEnd,total=e-s+1;
     const got=Object.keys(caught).filter(k=>+k>=s&&+k<=e).length;
     const el=document.getElementById('bprog-'+b);
-    if(el){
-      el.textContent=`${got}/${total}`;
-      el.classList.toggle('done', got===total);
-    }
+    if(el){ el.textContent=`${got}/${total}`; el.classList.toggle('done',got===total); }
   });
 
   FORMS.forEach(cat=>{
     const el=document.getElementById('fcat-'+cat.cat.replace(/\s/g,'_'));
-    if(el){
-      const cc=cat.list.filter(f=>formsCaught[f.id]).length;
-      const b=el.querySelector('.badge');
-      if(b) b.textContent=`${cc}/${cat.list.length}`;
-    }
+    if(el){ const cc=cat.list.filter(f=>formsCaught[f.id]).length; const b=el.querySelector('.badge'); if(b) b.textContent=`${cc}/${cat.list.length}`; }
   });
 }
 
@@ -671,31 +603,16 @@ function updateBars(){
 //  DASHBOARD
 // ═══════════════════════════════════════════
 function renderDash(){
-  // gen stats
   const gs=document.getElementById('gstats'); gs.innerHTML='';
   GENS.forEach(g=>{
-    const tot=g.e-g.s+1;
-    const c=Object.keys(caught).filter(k=>+k>=g.s&&+k<=g.e).length;
-    const p=(c/tot*100).toFixed(0);
-    gs.innerHTML+=`<div class="grow">
-      <div class="gdot" style="background:${g.c}"></div>
-      <div class="glbl">Gen ${g.n} <span style="color:var(--text2)">(${g.s}–${g.e})</span></div>
-      <div class="gbar"><div class="gbfill" style="width:${p}%;background:${g.c}"></div></div>
-      <div class="gpct" style="color:${g.c}">${p}%</div>
-    </div>`;
+    const tot=g.e-g.s+1,c=Object.keys(caught).filter(k=>+k>=g.s&&+k<=g.e).length,p=(c/tot*100).toFixed(0);
+    gs.innerHTML+=`<div class="grow"><div class="gdot" style="background:${g.c}"></div><div class="glbl">Gen ${g.n} <span style="color:var(--text2)">(${g.s}–${g.e})</span></div><div class="gbar"><div class="gbfill" style="width:${p}%;background:${g.c}"></div></div><div class="gpct" style="color:${g.c}">${p}%</div></div>`;
   });
-
-  // games
   const gg=document.getElementById('ggrid'); gg.innerHTML='';
   GAMES.forEach(g=>{
-    const chip=document.createElement('div');
-    chip.className='gchip'+(ownedGames[g.id]?' own':'');
+    const chip=document.createElement('div'); chip.className='gchip'+(ownedGames[g.id]?' own':'');
     chip.innerHTML=`<div class="dot"></div>${g.ic} ${g.nm}`;
-    chip.onclick=()=>{
-      ownedGames[g.id]=!ownedGames[g.id];
-      chip.classList.toggle('own',ownedGames[g.id]);
-      save(); renderObt();
-    };
+    chip.onclick=()=>{ ownedGames[g.id]=!ownedGames[g.id]; chip.classList.toggle('own',ownedGames[g.id]); save(); renderObt(); };
     gg.appendChild(chip);
   });
   renderObt();
@@ -705,18 +622,7 @@ function renderObt(){
   const owned=GAMES.filter(g=>ownedGames[g.id]).map(g=>g.nm);
   const div=document.getElementById('obtnotes');
   if(!owned.length){div.textContent='Select the games you own above to see notes.';return;}
-  const notes={
-    Scarlet:'Koraidon, Armarouge, Great Tusk, Scream Tail, Brute Bonnet, Flutter Mane, Slither Wing, Sandy Shocks, Roaring Moon, Gouging Fire, Raging Bolt',
-    Violet:'Miraidon, Ceruledge, Iron Treads, Iron Bundle, Iron Hands, Iron Jugulis, Iron Moth, Iron Thorns, Iron Valiant, Walking Wake, Iron Leaves, Iron Boulder, Iron Crown',
-    Sword:'Zacian, Bagon line, Deino line, Jangmo-o line, Farfetch\'d-Galar, Sirfetch\'d, Flapple',
-    Shield:'Zamazenta, Larvitar line, Corsola-Galar, Cursola, Appletun',
-    BDSP:'Dialga (BD) / Palkia (SP), most Gen 1–4 Pokémon via Grand Underground',
-    PLA:'All Hisuian forms, Wyrdeer, Kleavor, Basculegion, Sneasler, Overqwil, Enamorus, Ursaluna',
-    Sun:'Solgaleo, all Alolan forms natively',
-    Moon:'Lunala, all Alolan forms natively',
-    ORAS:'Latias/Latios, Mega Rayquaza, Deoxys, most Gen 3 Pokémon',
-    HOME:'Required to transfer between games. Some events distributed here.',
-  };
+  const notes={Scarlet:'Koraidon, Armarouge, Great Tusk, Scream Tail, Brute Bonnet, Flutter Mane, Slither Wing, Sandy Shocks, Roaring Moon, Gouging Fire, Raging Bolt',Violet:'Miraidon, Ceruledge, Iron Treads, Iron Bundle, Iron Hands, Iron Jugulis, Iron Moth, Iron Thorns, Iron Valiant, Walking Wake, Iron Leaves, Iron Boulder, Iron Crown',Sword:"Zacian, Bagon line, Deino line, Jangmo-o line, Farfetch'd-Galar, Sirfetch'd, Flapple",Shield:'Zamazenta, Larvitar line, Corsola-Galar, Cursola, Appletun',BDSP:'Dialga (BD) / Palkia (SP), most Gen 1–4 via Grand Underground',PLA:'All Hisuian forms, Wyrdeer, Kleavor, Basculegion, Sneasler, Overqwil, Enamorus, Ursaluna',Sun:'Solgaleo, all Alolan forms natively',Moon:'Lunala, all Alolan forms natively',ORAS:'Latias/Latios, Mega Rayquaza, Deoxys, most Gen 3',HOME:'Required to transfer between games. Some events distributed here.'};
   div.innerHTML=owned.map(g=>notes[g]?`<b>${g}:</b> ${notes[g]}<br>`:'').join('');
 }
 
@@ -727,294 +633,124 @@ function checkConfetti(){
   if(Object.keys(caught).filter(k=>+k>=1&&+k<=1025).length===1025) launchConfetti();
 }
 function launchConfetti(){
-  const cv=document.getElementById('cc'), ctx=cv.getContext('2d');
+  const cv=document.getElementById('cc'),ctx=cv.getContext('2d');
   cv.width=innerWidth; cv.height=innerHeight;
-  const ps=Array.from({length:160},()=>({
-    x:Math.random()*cv.width, y:-20-Math.random()*cv.height,
-    w:5+Math.random()*7, h:10+Math.random()*7,
-    r:Math.random()*Math.PI*2, dr:(.5-Math.random())*.18,
-    vx:(.5-Math.random())*2, vy:2.5+Math.random()*3,
-    col:`hsl(${Math.random()*360},90%,60%)`
-  }));
+  const ps=Array.from({length:160},()=>({x:Math.random()*cv.width,y:-20-Math.random()*cv.height,w:5+Math.random()*7,h:10+Math.random()*7,r:Math.random()*Math.PI*2,dr:(.5-Math.random())*.18,vx:(.5-Math.random())*2,vy:2.5+Math.random()*3,col:`hsl(${Math.random()*360},90%,60%)`}));
   let f=0;
   (function draw(){
     ctx.clearRect(0,0,cv.width,cv.height);
-    ps.forEach(p=>{
-      ctx.save();ctx.translate(p.x,p.y);ctx.rotate(p.r);
-      ctx.fillStyle=p.col;ctx.fillRect(-p.w/2,-p.h/2,p.w,p.h);ctx.restore();
-      p.x+=p.vx;p.y+=p.vy;p.r+=p.dr;
-      if(p.y>cv.height){p.y=-20;p.x=Math.random()*cv.width;}
-    });
+    ps.forEach(p=>{ ctx.save();ctx.translate(p.x,p.y);ctx.rotate(p.r);ctx.fillStyle=p.col;ctx.fillRect(-p.w/2,-p.h/2,p.w,p.h);ctx.restore();p.x+=p.vx;p.y+=p.vy;p.r+=p.dr;if(p.y>cv.height){p.y=-20;p.x=Math.random()*cv.width;} });
     if(f++<360) requestAnimationFrame(draw);
     else ctx.clearRect(0,0,cv.width,cv.height);
   })();
 }
 
 // ═══════════════════════════════════════════
-//  SHARE / EXPORT
+//  APPLY CLOUD DATA TO UI
 // ═══════════════════════════════════════════
-function shareProgress(){
-  // build modal
-  if(document.getElementById('share-modal')) { document.getElementById('share-modal').style.display='flex'; return; }
-  const bg=document.createElement('div'); bg.className='modal-bg'; bg.id='share-modal';
-  bg.innerHTML=`
-    <div class="modal">
-      <h2>📤 Share & Export</h2>
-      <canvas id="share-preview"></canvas>
-      <div class="modal-btns">
-        <button class="mbtn" onclick="exportCard()">🖼️ Save as Image</button>
-        <button class="mbtn" onclick="copyShareText()">📋 Copy Progress Summary</button>
-        <button class="mbtn" id="native-share-btn" onclick="nativeShare()" style="display:none">📱 Share…</button>
-      </div>
-      <button class="mbtn-close" onclick="document.getElementById('share-modal').style.display='none'">Close</button>
-    </div>`;
-  document.body.appendChild(bg);
-  bg.addEventListener('click', e=>{ if(e.target===bg) bg.style.display='none'; });
-  if(navigator.share) document.getElementById('native-share-btn').style.display='flex';
-  drawCard();
+function applyCloudData(d){
+  try{ caught      = JSON.parse(d.caught      ||'{}'); }catch(e){}
+  try{ formsCaught = JSON.parse(d.formsCaught ||'{}'); }catch(e){}
+  try{ ownedGames  = JSON.parse(d.ownedGames  ||'{}'); }catch(e){}
+  document.querySelectorAll('.slot[data-id]').forEach(el=>el.classList.toggle('got',!!caught[+el.dataset.id]));
+  document.querySelectorAll('.slot[data-fid]').forEach(el=>el.classList.toggle('got',!!formsCaught[el.dataset.fid]));
+  updateBars();
+  localSave();
 }
 
-function drawCard(){
-  const cv=document.getElementById('share-preview');
-  if(!cv) return;
-  const W=360, H=200;
-  cv.width=W; cv.height=H; cv.style.display='block';
-  const ctx=cv.getContext('2d');
-
-  // background
-  ctx.fillStyle='#1a1a2e'; ctx.fillRect(0,0,W,H);
-  ctx.fillStyle='#16213e'; ctx.fillRect(0,0,W,60);
-
-  // title
-  ctx.fillStyle='#e94560'; ctx.font='bold 18px system-ui';
-  ctx.fillText('HOME Dex Tracker',16,36);
-
-  // overall %
-  const total=1025;
-  const c=Object.keys(caught).filter(k=>+k>=1&&+k<=total).length;
-  const pct=(c/total*100).toFixed(1);
-  ctx.fillStyle='#e0e0e0'; ctx.font='bold 36px system-ui';
-  ctx.fillText(pct+'%',16,105);
-  ctx.fillStyle='#a0aec0'; ctx.font='14px system-ui';
-  ctx.fillText(`${c} / ${total} Pokémon caught`,16,125);
-
-  // progress bar
-  const bx=16,by=140,bw=W-32,bh=12;
-  ctx.fillStyle='#2d3748'; ctx.beginPath();
-  ctx.roundRect(bx,by,bw,bh,6); ctx.fill();
-  ctx.fillStyle='#4ade80';
-  const fw=Math.round(bw*(c/total));
-  if(fw>0){ ctx.beginPath(); ctx.roundRect(bx,by,fw,bh,6); ctx.fill(); }
-
-  // gen bars
-  const gx=16, gy=165, gh=8, gw=(W-32-8*8)/9;
-  GENS.forEach((g,i)=>{
-    const gt=g.e-g.s+1;
-    const gc=Object.keys(caught).filter(k=>+k>=g.s&&+k<=g.e).length;
-    const x=gx+i*(gw+8);
-    ctx.fillStyle='#2d3748'; ctx.beginPath();
-    ctx.roundRect(x,gy,gw,gh,3); ctx.fill();
-    ctx.fillStyle=g.c;
-    const fw2=Math.round(gw*(gc/gt));
-    if(fw2>0){ ctx.beginPath(); ctx.roundRect(x,gy,fw2,gh,3); ctx.fill(); }
-    ctx.fillStyle=g.c; ctx.font='bold 9px system-ui';
-    ctx.fillText('G'+g.n, x+(gw/2)-7, gy+gh+11);
-  });
-
-  // date
-  ctx.fillStyle='#4a5568'; ctx.font='11px system-ui';
-  ctx.fillText(new Date().toLocaleDateString(), W-80, H-8);
-}
-
-function exportCard(){
-  drawCard();
-  const cv=document.getElementById('share-preview');
-  const link=document.createElement('a');
-  link.download='homedex-progress.png';
-  link.href=cv.toDataURL('image/png');
-  link.click();
-}
-
-function copyShareText(){
-  const total=1025;
-  const c=Object.keys(caught).filter(k=>+k>=1&&+k<=total).length;
-  const pct=(c/total*100).toFixed(1);
-  const lines=GENS.map(g=>{
-    const gt=g.e-g.s+1;
-    const gc=Object.keys(caught).filter(k=>+k>=g.s&&+k<=g.e).length;
-    return `Gen ${g.n}: ${gc}/${gt} (${(gc/gt*100).toFixed(0)}%)`;
-  });
-  const text=`🏠 HOME Dex Progress\n${pct}% complete — ${c}/1025\n\n${lines.join('\n')}\n\nhttps://github.com`;
-  navigator.clipboard.writeText(text).then(()=>{
-    const btn=document.querySelector('.modal-btns .mbtn');
-    const orig=btn.innerHTML; btn.innerHTML='✅ Copied!';
-    setTimeout(()=>btn.innerHTML=orig,2000);
-  });
-}
-
-async function nativeShare(){
-  drawCard();
-  const cv=document.getElementById('share-preview');
-  const total=1025;
-  const c=Object.keys(caught).filter(k=>+k>=1&&+k<=total).length;
-  const pct=(c/total*100).toFixed(1);
-  try {
-    const blob=await new Promise(r=>cv.toBlob(r,'image/png'));
-    const file=new File([blob],'homedex.png',{type:'image/png'});
-    await navigator.share({
-      title:'HOME Dex Progress',
-      text:`I've caught ${c}/1025 Pokémon (${pct}%) in my HOME Dex!`,
-      files:[file]
-    });
-  } catch(e){ console.log('Share cancelled',e); }
-}
-load();
-document.body.classList.toggle('light',!dark);
-document.getElementById('dtog').textContent=dark?'☀️ Light':'🌙 Dark';
+// ═══════════════════════════════════════════
+//  INIT
+// ═══════════════════════════════════════════
+localLoad();
 buildDex();
 buildForms();
 updateBars();
 
-// measure actual header height so search bar sticks right below it
 function setHdrHeight(){
-  const h = document.getElementById('hdr').offsetHeight;
-  document.documentElement.style.setProperty('--hdr-h', h+'px');
+  const h=document.getElementById('hdr').offsetHeight;
+  document.documentElement.style.setProperty('--hdr-h',h+'px');
 }
 setHdrHeight();
-window.addEventListener('resize', setHdrHeight);
+window.addEventListener('resize',setHdrHeight);
 </script>
 
 <!-- ═══════════════════════════════════════════
-     FIREBASE — paste your config below
+     FIREBASE (compat SDK — works on all browsers including iOS Safari)
      ═══════════════════════════════════════════ -->
-<script type="module">
-import { initializeApp }
-  from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
-import { getFirestore, doc, getDoc, setDoc }
-  from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
-import { getAuth, signInAnonymously, onAuthStateChanged }
-  from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js';
-
-// ─── PASTE YOUR firebaseConfig HERE ───────
-const firebaseConfig = {
-  apiKey:            "AIzaSyDae6M9iE9OHI78gsa8Dn5FGD2ynWdiUPc",
-  authDomain:        "dex-tracker-ebc8d.firebaseapp.com",
-  projectId:         "dex-tracker-ebc8d",
-  storageBucket:     "dex-tracker-ebc8d.firebasestorage.app",
-  messagingSenderId: "367012022030",
-  appId:             "1:367012022030:web:20d16e62168ff8658b395f"
-};
-// ──────────────────────────────────────────
-  const app  = initializeApp(firebaseConfig);
-  const db   = getFirestore(app);
-  const auth = getAuth(app);
-
-  // show a small sync indicator in the header
-  const syncDot = document.createElement('span');
-  syncDot.id = 'sync-dot';
-  syncDot.title = 'Cloud sync status';
-  syncDot.style.cssText =
-    'width:8px;height:8px;border-radius:50%;background:#f39c12;display:inline-block;margin-left:4px;transition:background .4s;flex-shrink:0';
-  document.querySelector('.hdr-r').prepend(syncDot);
-
-  const setSyncStatus = s => {
-    // s: 'syncing' | 'ok' | 'error'
-    syncDot.style.background = s==='ok' ? '#4ade80' : s==='error' ? '#e94560' : '#f39c12';
-    syncDot.title = s==='ok' ? 'Synced to cloud' : s==='error' ? 'Sync error' : 'Syncing…';
-  };
-
-  let uid = null;
-  let saveTimer = null;
-
-  // Debounced cloud save — batches rapid catches into one write
-  window.cloudSave = () => {
-    clearTimeout(saveTimer);
-    saveTimer = setTimeout(async () => {
-      if (!uid) return;
-      setSyncStatus('syncing');
-      try {
-        await setDoc(
-          doc(db, 'users', uid, 'data', 'progress'),
-          {
-            caught:      JSON.stringify(caught),
-            formsCaught: JSON.stringify(formsCaught),
-            ownedGames:  JSON.stringify(ownedGames),
-            dark:        dark ? '1' : '0',
-            updatedAt:   Date.now(),
-          }
-        );
-        setSyncStatus('ok');
-      } catch(e) {
-        console.error('[HOME Dex] Firestore save error:', e);
-        setSyncStatus('error');
-      }
-    }, 800); // wait 800 ms after last catch before writing
-  };
-
-  // Apply loaded cloud data to the live UI
-  function applyCloudData(d) {
-    try { caught      = JSON.parse(d.caught      || '{}'); } catch(e){}
-    try { formsCaught = JSON.parse(d.formsCaught || '{}'); } catch(e){}
-    try { ownedGames  = JSON.parse(d.ownedGames  || '{}'); } catch(e){}
-    dark = d.dark !== '0';
-
-    document.body.classList.toggle('light', !dark);
-    document.getElementById('dtog').textContent = dark ? '☀️' : '🌙';
-
-    // sync slot classes
-    document.querySelectorAll('.slot[data-id]').forEach(el => {
-      el.classList.toggle('got', !!caught[+el.dataset.id]);
-    });
-    document.querySelectorAll('.slot[data-fid]').forEach(el => {
-      el.classList.toggle('got', !!formsCaught[el.dataset.fid]);
-    });
-    updateBars();
-
-    // mirror to localStorage
-    try {
-      localStorage.setItem('pht_caught', JSON.stringify(caught));
-      localStorage.setItem('pht_forms',  JSON.stringify(formsCaught));
-      localStorage.setItem('pht_games',  JSON.stringify(ownedGames));
-      localStorage.setItem('pht_dark',   dark ? '1' : '0');
-    } catch(e){}
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+<script>
+(function initFirebase(){
+  if(typeof firebase === 'undefined'){
+    setTimeout(initFirebase, 100);
+    return;
   }
 
-  signInAnonymously(auth).catch(e => {
+  var config = {
+    apiKey:            "AIzaSyDae6M9iE9OHI78gsa8Dn5FGD2ynWdiUPc",
+    authDomain:        "dex-tracker-ebc8d.firebaseapp.com",
+    projectId:         "dex-tracker-ebc8d",
+    storageBucket:     "dex-tracker-ebc8d.firebasestorage.app",
+    messagingSenderId: "367012022030",
+    appId:             "1:367012022030:web:20d16e62168ff8658b395f"
+  };
+
+  try {
+    firebase.initializeApp(config);
+  } catch(e) {
+    console.error('[HOME Dex] Firebase init failed:', e);
+    setSyncStatus('error');
+    return;
+  }
+
+  var db   = firebase.firestore();
+  var auth = firebase.auth();
+  var uid  = null;
+  var saveTimer = null;
+
+  window.cloudSave = function(){
+    clearTimeout(saveTimer);
+    saveTimer = setTimeout(function(){
+      if(!uid) return;
+      setSyncStatus('syncing');
+      db.collection('users').doc(uid).collection('data').doc('progress').set({
+        caught:      JSON.stringify(caught),
+        formsCaught: JSON.stringify(formsCaught),
+        ownedGames:  JSON.stringify(ownedGames),
+        updatedAt:   Date.now()
+      }).then(function(){
+        setSyncStatus('ok');
+      }).catch(function(e){
+        console.error('[HOME Dex] Save error:', e);
+        setSyncStatus('error');
+      });
+    }, 800);
+  };
+
+  auth.signInAnonymously().catch(function(e){
     console.error('[HOME Dex] Auth error:', e);
     setSyncStatus('error');
   });
 
-  onAuthStateChanged(auth, async user => {
-    if (!user) return;
+  auth.onAuthStateChanged(function(user){
+    if(!user) return;
     uid = user.uid;
     setSyncStatus('syncing');
-
-    try {
-      const snap = await getDoc(doc(db, 'users', uid, 'data', 'progress'));
-      if (snap.exists()) {
-        // Cloud has data — check which is newer
-        const cloud = snap.data();
-        const cloudTs = cloud.updatedAt || 0;
-        const localTs = +localStorage.getItem('pht_ts') || 0;
-        if (cloudTs >= localTs) {
-          applyCloudData(cloud);
-        }
-        // else keep the localStorage data that was already loaded
+    db.collection('users').doc(uid).collection('data').doc('progress').get().then(function(snap){
+      if(snap.exists){
+        var cloud = snap.data();
+        var cloudTs = cloud.updatedAt || 0;
+        var localTs = +localStorage.getItem('pht_ts') || 0;
+        if(cloudTs >= localTs) applyCloudData(cloud);
       }
       setSyncStatus('ok');
-    } catch(e) {
-      console.error('[HOME Dex] Firestore load error:', e);
+    }).catch(function(e){
+      console.error('[HOME Dex] Load error:', e);
       setSyncStatus('error');
-    }
+    });
   });
-
-  // stamp localStorage writes so we can compare with cloud
-  const _origSave = window.save;
-  window.save = () => {
-    try { localStorage.setItem('pht_ts', Date.now()); } catch(e){}
-    _origSave();
-  };
-}
+})();
 </script>
 </body>
 </html>
